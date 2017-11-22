@@ -22,18 +22,18 @@ class QLearning(object):
     def _get_q(self, a, s):
         return self.data.get('{}_{}'.format(s, a), self.arbitrarily)
 
-    def _calc_epsilon(self):
-        epsilon = 1.0 / math.sqrt(self.k * 1.0)
-        if self.k % 1000 == 0:
-            print('[debug] [epsilon] k={}, epsilon={:.4f}'.format(self.k, epsilon))
-        return epsilon
+    # def _calc_epsilon(self):
+    #     epsilon = 1.0 / math.sqrt(self.k * 1.0)
+    #     if self.k % 1000 == 0:
+    #         print('[debug] [epsilon] k={}, epsilon={:.4f}'.format(self.k, epsilon))
+    #     return epsilon
 
     def _e_greedy(self, state):
-        if random.random() <= self._calc_epsilon():
-            return random.choice(self.action_set)
-        else:
-            action, _ = self._greedy(state)
-            return action
+        # if random.random() <= self._calc_epsilon():
+        #     return random.choice(self.action_set)
+        # else:
+        action, _ = self._greedy(state)
+        return action
 
     def _greedy(self, state):
         max_a = self.action_set[0]

@@ -23,22 +23,30 @@ def DijkstraWorld():
 if __name__ == '__main__':
     env = DijkstraWorld()
     agent = QLearning([0, 1, 2, 3], env.get_end_state(), 10)
-    episode_num = 1000
+    episode_num = 50
     for i in range(episode_num):
         env.reset()
+        # if episode_num/2 < i:
         env.render()
         if i == 0:
+            input("press any key to launch...")
+        if i == episode_num/2:
             input("press any key to launch...")
         step_count = 0
         s = env.get_start_state()
         while True:
             step_count += 1
-            a = agent.policy(s)
+            a = env.action_space.sample()
+            if episode_num/2 < i:
+                a = agent.policy(s)
             ss, reward, done, info = env.step(a)
             agent.update(s, a, reward, ss)
             s = ss
+            # if episode_num/2 < i:
             env.render()
             if done:
                 print("{}th episode cost {} step".format(i+1, step_count))
                 break
     input("press any key to quit...")
+
+
