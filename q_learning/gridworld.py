@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 General GridWorld Environment
 
