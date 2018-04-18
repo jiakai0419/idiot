@@ -102,3 +102,7 @@ ENV/
 
 # ide
 .idea
+
+# mac
+.DS_Store
+
