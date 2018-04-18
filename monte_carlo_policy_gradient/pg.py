@@ -21,8 +21,8 @@ class PolicyGradient(object):
     def __init__(self,
                  state_dim,
                  action_dim,
-                 alpha=0.001,
-                 gamma=0.90):
+                 alpha=0.005,
+                 gamma=0.97):
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.alpha = alpha

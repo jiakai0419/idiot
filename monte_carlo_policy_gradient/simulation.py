@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import gym
 from pg import PolicyGradient, MAGIC_NUMBER
 
-EPISODE = 2000
+EPISODE = 3000
 TEST_EPISODE = 10
 
 performance_line = []
@@ -28,7 +28,7 @@ def main():
     agent = PolicyGradient(state_dim=env.observation_space.shape[0],
                            action_dim=env.action_space.n)
 
-    for episode in xrange(EPISODE):
+    for episode in xrange(1, EPISODE+1):
         state = env.reset()
         while True:
             action = agent.policy(state)
@@ -47,7 +47,7 @@ def main():
 
 def test_performance(trained_episode, env, agent):
     total_reward = 0
-    for episode in xrange(TEST_EPISODE):
+    for episode in xrange(1, TEST_EPISODE+1):
         state = env.reset()
         env.render()
         while True:
