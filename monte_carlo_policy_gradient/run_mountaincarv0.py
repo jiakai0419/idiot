@@ -6,12 +6,28 @@ import matplotlib.pyplot as plt
 import gym
 from pg import PolicyGradient, MAGIC_NUMBER
 
-EPISODE = 3000
+EPISODE = 5000
 TEST_EPISODE = 10
 
 performance_line = []
 
-FAST_FLAG = True
+FAST_FLAG = False
+
+### customized for env begin ###
+GOAL_POSITION = 0.5
+
+
+def _calc_distance(state):
+    position = state[0]
+    return abs(position - GOAL_POSITION)
+
+
+def _calc_progressive_reward(state, next_state):
+    # return _calc_distance(state) - _calc_distance(next_state)
+    return - _calc_distance(next_state)
+
+
+### customized for env end ###
 
 
 def visual_performance(env, agent):
@@ -24,26 +40,27 @@ def visual_performance(env, agent):
 
 
 def main():
-    # https://github.com/openai/gym/wiki/CartPole-v0
-    env = gym.make('CartPole-v0')
+    # https://github.com/openai/gym/wiki/MountainCar-v0
+    env = gym.make('MountainCar-v0')
     env.seed(MAGIC_NUMBER)
     agent = PolicyGradient(state_dim=env.observation_space.shape[0],
                            action_dim=env.action_space.n,
-                           alpha=0.005,
+                           alpha=0.05,
                            gamma=0.97)
 
-    for episode in xrange(1, EPISODE+1):
+    for episode in xrange(1, EPISODE + 1):
         state = env.reset()
         while True:
             action = agent.policy(state)
-            next_state, reward, done, _ = env.step(action)
+            next_state, _, done, _ = env.step(action)
+            reward = _calc_progressive_reward(state, next_state)
             agent.store_one_step_mdp(state, action, reward)
             if done:
                 break
             state = next_state
         agent.update()
 
-        if episode % 100 == 0:
+        if episode % 500 == 0:
             test_performance(episode, env, agent)
 
     visual_performance(env, agent)
@@ -51,7 +68,7 @@ def main():
 
 def test_performance(trained_episode, env, agent):
     total_reward = 0
-    for episode in xrange(1, TEST_EPISODE+1):
+    for episode in xrange(1, TEST_EPISODE + 1):
         state = env.reset()
         if not FAST_FLAG:
             env.render()
