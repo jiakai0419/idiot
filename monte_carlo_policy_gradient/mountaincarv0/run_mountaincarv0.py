@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import gym
 from pg import PolicyGradient, MAGIC_NUMBER
 
-EPISODE = 5000
+EPISODE = 6000
 TEST_EPISODE = 10
 
 performance_line = []
@@ -91,8 +91,8 @@ def test_performance(trained_episode, env, agent):
             state = next_state
     avg_reward = total_reward * 1.0 / TEST_EPISODE
     performance_line.append((trained_episode, avg_reward))
-    if avg_reward > -150.0:
-        FAST_FLAG = False
+    # if -110.0 <= avg_reward:
+    #     FAST_FLAG = False
     print 'episode:{}, avg_reward:{}'.format(trained_episode, avg_reward)
 
 
