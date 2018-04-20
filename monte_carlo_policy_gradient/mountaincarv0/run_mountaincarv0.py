@@ -46,7 +46,7 @@ def main():
     env.seed(MAGIC_NUMBER)
     agent = PolicyGradient(state_dim=env.observation_space.shape[0],
                            action_dim=env.action_space.n,
-                           alpha=0.006,
+                           alpha=0.003,
                            gamma=0.997)
 
     for episode in xrange(1, EPISODE + 1):
