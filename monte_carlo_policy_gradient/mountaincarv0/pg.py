@@ -41,7 +41,7 @@ class PolicyGradient(object):
     def _create_policy_network(self):
         self.states_input = tf.placeholder("float32", [None, self.state_dim])
 
-        hidden_layer_units = 16
+        hidden_layer_units = 12
         W1 = gen_weight_variable([self.state_dim, hidden_layer_units])
         b1 = gen_bias_variable([1, hidden_layer_units])
         W2 = gen_weight_variable([hidden_layer_units, self.action_dim])
