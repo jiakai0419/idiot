@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import gym
 from pg import PolicyGradient, MAGIC_NUMBER
 
-EPISODE = 20000
+EPISODE = 50000
 TEST_EPISODE = 10
 
 performance_line = []
 
-FAST_FLAG = False
+FAST_FLAG = True
 
 ### customized for env begin ###
 GOAL_POSITION = 0.5
@@ -39,13 +39,14 @@ def visual_performance(env, agent):
 
 
 def main():
+    global FAST_FLAG
     # https://github.com/openai/gym/wiki/MountainCar-v0
     env = gym.make('MountainCar-v0')
     env.seed(MAGIC_NUMBER)
     agent = PolicyGradient(state_dim=env.observation_space.shape[0],
                            action_dim=env.action_space.n,
-                           alpha=0.0001,
-                           gamma=0.99)
+                           alpha=0.005,
+                           gamma=0.999)
 
     for episode in xrange(1, EPISODE + 1):
         state = env.reset()
@@ -60,7 +61,11 @@ def main():
         agent.update()
 
         if episode % 100 == 0:
+            if episode % 1000 == 0:
+                FAST_FLAG = False
             test_performance(episode, env, agent)
+            if episode % 1000 == 0:
+                FAST_FLAG = True
 
     visual_performance(env, agent)
 
@@ -86,8 +91,7 @@ def test_performance(trained_episode, env, agent):
             state = next_state
     avg_reward = total_reward * 1.0 / TEST_EPISODE
     performance_line.append((trained_episode, avg_reward))
-    print 'episode:{}, avg_reward:{}'.format(trained_episode, avg_reward)
-    print 'episode:{}, avg_customed_reward:{}'.format(trained_episode, total_customed_reward * 1.0 / TEST_EPISODE)
+    print 'episode:{}, avg_reward:{}, avg_customed_reward:{}'.format(trained_episode, avg_reward, total_customed_reward * 1.0 / TEST_EPISODE)
 
 
 if __name__ == '__main__':
