@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import gym
 from pg import PolicyGradient, MAGIC_NUMBER
 
+import argparse
+
 EPISODE = 6000
 TEST_EPISODE = 10
 
@@ -39,15 +41,17 @@ def visual_performance(env, agent):
     fig.savefig('{}_performance_alpha_{}_gamma_{}.png'.format(env.spec.id, agent.alpha, agent.gamma))
 
 
-def main():
+def main(params):
     # https://github.com/openai/gym/wiki/MountainCar-v0
     env = gym.make('MountainCar-v0')
     env = env.unwrapped
     env.seed(MAGIC_NUMBER)
     agent = PolicyGradient(state_dim=env.observation_space.shape[0],
                            action_dim=env.action_space.n,
-                           alpha=0.003,
+                           alpha=params.alpha,
                            gamma=0.997)
+
+    print '[debug] [agent] alpha:{}, gamma:{}'.format(agent.alpha, agent.gamma)
 
     for episode in xrange(1, EPISODE + 1):
         rewards_in_episode = 0
@@ -97,4 +101,14 @@ def test_performance(trained_episode, env, agent):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--alpha",
+                        action="store",
+                        type=float)
+    params = parser.parse_args()
+
+    if params.alpha is None:
+        print '[Error] alpha is None'
+        exit(1)
+
+    main(params)
