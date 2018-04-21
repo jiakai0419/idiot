@@ -8,7 +8,7 @@ from pg import PolicyGradient, MAGIC_NUMBER
 
 import argparse
 
-EPISODE = 500
+EPISODE = 8000
 TEST_EPISODE = 10
 
 performance_line = []
