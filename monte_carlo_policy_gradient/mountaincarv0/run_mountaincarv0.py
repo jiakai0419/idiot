@@ -8,7 +8,7 @@ from pg import PolicyGradient, MAGIC_NUMBER
 
 import argparse
 
-EPISODE = 8000
+EPISODE = 500
 TEST_EPISODE = 10
 
 performance_line = []
@@ -37,7 +37,7 @@ def visual_performance(env, agent):
     ax.plot([p[0] for p in performance_line], [p[1] for p in performance_line])
     ax.set_xlabel('episode_num')
     ax.set_ylabel('avg_reward')
-    ax.set_title('performance')
+    ax.set_title('PERFORMANCE last_avg_reward:{}'.format(performance_line[-1][1]))
     fig.savefig('{}_performance_alpha_{}_gamma_{}.png'.format(env.spec.id, agent.alpha, agent.gamma))
 
 
