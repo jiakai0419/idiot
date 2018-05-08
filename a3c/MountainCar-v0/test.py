@@ -3,19 +3,18 @@ from collections import deque
 
 import torch
 import torch.nn.functional as F
-from torch.autograd import Variable
 
-from envs import create_atari_env
+from envs import create_discrete_env
 from model import ActorCritic
 
 
 def test(rank, args, shared_model, counter):
     torch.manual_seed(args.seed + rank)
 
-    env = create_atari_env(args.env_name)
+    env = create_discrete_env(args.env_name)
     env.seed(args.seed + rank)
 
-    model = ActorCritic(env.observation_space.shape[0], env.action_space)
+    model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
 
     model.eval()
 
@@ -34,15 +33,9 @@ def test(rank, args, shared_model, counter):
         # Sync with the shared model
         if done:
             model.load_state_dict(shared_model.state_dict())
-            cx = Variable(torch.zeros(1, 256), volatile=True)
-            hx = Variable(torch.zeros(1, 256), volatile=True)
-        else:
-            cx = Variable(cx.data, volatile=True)
-            hx = Variable(hx.data, volatile=True)
 
-        value, logit, (hx, cx) = model((Variable(
-            state.unsqueeze(0), volatile=True), (hx, cx)))
-        prob = F.softmax(logit)
+        value, logit = model.forward(state.unsqueeze(0))
+        prob = F.softmax(logit, dim=1)
         action = prob.max(1, keepdim=True)[1].data.numpy()
 
         state, reward, done, _ = env.step(action[0, 0])

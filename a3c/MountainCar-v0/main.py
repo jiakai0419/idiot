@@ -7,7 +7,7 @@ import torch
 import torch.multiprocessing as mp
 
 import my_optim
-from envs import create_atari_env
+from envs import create_discrete_env
 from model import ActorCritic
 from test import test
 from train import train
@@ -44,14 +44,12 @@ parser.add_argument('--no-shared', default=False,
 
 if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
-    os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
-    env = create_atari_env(args.env_name)
-    shared_model = ActorCritic(
-        env.observation_space.shape[0], env.action_space)
+    env = create_discrete_env(args.env_name)
+    shared_model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
     shared_model.share_memory()
 
     if args.no_shared:
@@ -65,9 +63,9 @@ if __name__ == '__main__':
     counter = mp.Value('i', 0)
     lock = mp.Lock()
 
-    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
-    p.start()
-    processes.append(p)
+    # p = mp.Process(target=test, args=(args.num_processes, args, shared_model, counter))
+    # p.start()
+    # processes.append(p)
 
     for rank in range(0, args.num_processes):
         p = mp.Process(target=train, args=(rank, args, shared_model, counter, lock, optimizer))
