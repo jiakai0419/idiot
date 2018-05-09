@@ -28,7 +28,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
     model.train()
 
     state = env.reset()
-    state = torch.from_numpy(state)
+    state = torch.from_numpy(state).float()
     done = True
 
     episode_length = 0
@@ -63,7 +63,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
                 episode_length = 0
                 state = env.reset()
 
-            state = torch.from_numpy(state)
+            state = torch.from_numpy(state).float()
             values.append(value)
             log_probs.append(log_prob)
             rewards.append(reward)
@@ -96,7 +96,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
         optimizer.zero_grad()
 
         (policy_loss + args.value_loss_coef * value_loss).backward()
-        torch.nn.utils.clip_grad_norm(model.parameters(), args.max_grad_norm)
+        # torch.nn.utils.clip_grad_norm(model.parameters(), args.max_grad_norm)
 
         ensure_shared_grads(model, shared_model)
         optimizer.step()

@@ -1,4 +1,5 @@
 import gym
+import gym.spaces
 
 
 def create_discrete_env(env_id):
