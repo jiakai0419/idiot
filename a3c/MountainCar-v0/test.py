@@ -56,7 +56,7 @@ def test(rank, args, shared_model, T):
                 T.value / (time.time() - start_time),
                 reward_sum,
                 t))
-            time.sleep(60)
+            time.sleep(45)
 
             # init for new episode
             t = 0

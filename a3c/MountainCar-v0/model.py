@@ -12,7 +12,7 @@ class ActorCritic(torch.nn.Module):
         self.critic_linear = nn.Linear(64, 1)
         self.actor_linear = nn.Linear(64, action_dim)
 
-        self.train()
+        # self.train()
 
     def forward(self, inputs):
         x = F.relu(self.fc1(inputs))
