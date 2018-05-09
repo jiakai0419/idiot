@@ -53,7 +53,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
             log_prob = log_prob.gather(1, action)
 
             state, reward, done, _ = env.step(action.item())
-            done = done or episode_length >= args.max_episode_length
+            done = done or episode_length >= args.t_max
             reward = max(min(reward, 1), -1)
 
             with lock:
