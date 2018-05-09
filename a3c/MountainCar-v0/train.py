@@ -5,6 +5,22 @@ import torch.optim as optim
 from envs import create_discrete_env
 from model import ActorCritic
 
+import matplotlib
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+performance_line = []
+
+
+def visual_performance(alpha):
+    fig, ax = plt.subplots()
+    ax.plot([p[0] for p in performance_line], [p[1] for p in performance_line])
+    ax.set_xlabel('episode_num')
+    ax.set_ylabel('t')
+    ax.set_title('PERFORMANCE last_t:{}'.format(performance_line[-1][1]))
+    fig.savefig('performance_alpha_{}.png'.format(alpha))
+
 
 def ensure_shared_grads(model, shared_model):
     for param, shared_param in zip(model.parameters(),
@@ -22,7 +38,7 @@ def train(rank, args, shared_model, T, lock, optimizer):
 
     model = ActorCritic(env.observation_space.shape[0], env.action_space.n)
 
-    while True:
+    for episode in range(args.episode_num_per_proc):
         # Sync with the shared model
         model.load_state_dict(shared_model.state_dict())
 
@@ -78,7 +94,11 @@ def train(rank, args, shared_model, T, lock, optimizer):
         loss = policy_loss + args.value_loss_coef * value_loss
         with torch.no_grad():
             print('[train debug] T:{} rank:{} episode_length:{} loss:{}'.format(
-                T.value, rank, t+1, loss.item()))
+                T.value, rank, t + 1, loss.item()))
+            performance_line.append((episode + 1, t + 1))
         loss.backward()
         ensure_shared_grads(model, shared_model)
         optimizer.step()
+
+    if rank == 0:
+        visual_performance(args.lr)

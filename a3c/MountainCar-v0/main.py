@@ -9,7 +9,7 @@ import torch.multiprocessing as mp
 import my_optim
 from envs import create_discrete_env
 from model import ActorCritic
-from test import test
+# from test import test
 from train import train
 
 parser = argparse.ArgumentParser(description='A3C')
@@ -23,12 +23,13 @@ parser.add_argument('--value-loss-coef', type=float, default=0.5,
                     help='value loss coefficient (default: 0.5)')
 parser.add_argument('--seed', type=int, default=1103515245,
                     help='random seed (default: 1103515245)')
-parser.add_argument('--num-processes', type=int, default=4,
+parser.add_argument('--num-processes', type=int, default=16,
                     help='how many training processes to use (default: 4)')
-parser.add_argument('--t-max', type=int, default=1000000,
-                    help='maximum length of an episode (default: 1000000)')
+parser.add_argument('--t-max', type=int, default=100000,
+                    help='maximum length of an episode (default: 100000)')
 parser.add_argument('--env-name', default='MountainCar-v0',
                     help='environment to train on (default: MountainCar-v0)')
+parser.add_argument('--episode-num-per-proc', type=int, default=2000)
 
 
 if __name__ == '__main__':
@@ -49,9 +50,9 @@ if __name__ == '__main__':
     T = mp.Value('i', 0)
     lock = mp.Lock()
 
-    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, T))
-    p.start()
-    processes.append(p)
+    # p = mp.Process(target=test, args=(args.num_processes, args, shared_model, T))
+    # p.start()
+    # processes.append(p)
 
     for rank in range(0, args.num_processes):
         p = mp.Process(target=train, args=(rank, args, shared_model, T, lock, optimizer))
