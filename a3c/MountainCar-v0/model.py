@@ -6,11 +6,11 @@ import torch.nn.functional as F
 class ActorCritic(torch.nn.Module):
     def __init__(self, state_dim, action_dim):
         super(ActorCritic, self).__init__()
-        self.fc1 = nn.Linear(state_dim, 40)
-        self.fc2 = nn.Linear(40, 20)
+        self.fc1 = nn.Linear(state_dim, 8)
+        self.fc2 = nn.Linear(8, 4)
 
-        self.critic_linear = nn.Linear(20, 1)
-        self.actor_linear = nn.Linear(20, action_dim)
+        self.critic_linear = nn.Linear(4, 1)
+        self.actor_linear = nn.Linear(4, action_dim)
 
         # self.train()
 

@@ -24,7 +24,7 @@ parser.add_argument('--value-loss-coef', type=float, default=0.5,
 parser.add_argument('--seed', type=int, default=1103515245,
                     help='random seed (default: 1103515245)')
 parser.add_argument('--num-processes', type=int, default=16,
-                    help='how many training processes to use (default: 4)')
+                    help='how many training processes to use (default: 16)')
 parser.add_argument('--t-max', type=int, default=100000,
                     help='maximum length of an episode (default: 100000)')
 parser.add_argument('--env-name', default='MountainCar-v0',
