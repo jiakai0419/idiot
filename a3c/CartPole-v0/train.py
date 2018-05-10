@@ -1,3 +1,5 @@
+import logging
+
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
@@ -11,6 +13,25 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 performance_line = []
+
+
+def register_logger(rank, alpha):
+    root_logger = logging.getLogger("root")
+    root_logger.setLevel(logging.DEBUG)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+
+    info_handler = logging.FileHandler("info.{}.proc_{}".format(alpha, rank), 'w')
+    info_handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    info_handler.setFormatter(formatter)
+
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(info_handler)
+    return root_logger
 
 
 def visual_performance(alpha):
@@ -31,6 +52,8 @@ def ensure_shared_grads(model, shared_model):
 
 
 def train(rank, args, shared_model, T, lock, optimizer):
+    log = register_logger(rank, args.lr)
+
     torch.manual_seed(args.seed + rank)
 
     env = create_discrete_env(args.env_name)
@@ -94,7 +117,7 @@ def train(rank, args, shared_model, T, lock, optimizer):
         loss = policy_loss + args.value_loss_coef * value_loss
         with torch.no_grad():
             if (episode + 1) % 100 == 0:
-                print('[train debug] T:{} rank:{} episdoe_num:{} episode_length:{} loss:{}'.format(
+                log.debug('[training] T:{} rank:{} episdoe_num:{} episode_length:{} loss:{}'.format(
                     T.value, rank, episode + 1, t + 1, loss.item()))
             performance_line.append((episode + 1, t + 1))
         loss.backward()
