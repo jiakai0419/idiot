@@ -27,8 +27,8 @@ parser.add_argument('--num-processes', type=int, default=16,
                     help='how many training processes to use (default: 16)')
 parser.add_argument('--t-max', type=int, default=100000,
                     help='maximum length of an episode (default: 100000)')
-parser.add_argument('--env-name', default='MountainCar-v0',
-                    help='environment to train on (default: MountainCar-v0)')
+parser.add_argument('--env-name', default='CartPole-v0',
+                    help='environment to train on (default: CartPole-v0)')
 parser.add_argument('--episode-num-per-proc', type=int, default=2000)
 
 

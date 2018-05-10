@@ -1,7 +1,7 @@
 from __future__ import print_function
 import numpy as np
 
-N = 3
+N = 10
 
 
 def universal():
