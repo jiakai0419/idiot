@@ -50,9 +50,9 @@ if __name__ == '__main__':
     T = mp.Value('i', 0)
     lock = mp.Lock()
 
-    p = mp.Process(target=test, args=(args.num_processes, args, shared_model, T))
-    p.start()
-    processes.append(p)
+    # p = mp.Process(target=test, args=(args.num_processes, args, shared_model, T))
+    # p.start()
+    # processes.append(p)
 
     for rank in range(0, args.num_processes):
         p = mp.Process(target=train, args=(rank, args, shared_model, T, lock, optimizer))

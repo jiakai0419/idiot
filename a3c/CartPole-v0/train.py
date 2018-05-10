@@ -34,13 +34,13 @@ def register_logger(rank, alpha):
     return root_logger
 
 
-def visual_performance(alpha):
+def visual_performance(alpha, proc_num):
     fig, ax = plt.subplots()
     ax.plot([p[0] for p in performance_line], [p[1] for p in performance_line])
     ax.set_xlabel('episode_num')
     ax.set_ylabel('t')
     ax.set_title('PERFORMANCE last_t:{}'.format(performance_line[-1][1]))
-    fig.savefig('performance_alpha_{}.png'.format(alpha))
+    fig.savefig('performance_alpha_{}_proc-num_{}.png'.format(alpha, proc_num))
 
 
 def ensure_shared_grads(model, shared_model):
@@ -114,7 +114,8 @@ def train(rank, args, shared_model, T, lock, optimizer):
             policy_loss = policy_loss - (log_probs[i] * advantage.detach() + args.entropy_coef * entropies[i])
 
         optimizer.zero_grad()
-        loss = policy_loss + args.value_loss_coef * value_loss
+        # loss = policy_loss + args.value_loss_coef * value_loss
+        loss = (policy_loss + args.value_loss_coef * value_loss) / (t + 1)
         with torch.no_grad():
             if (episode + 1) % 100 == 0:
                 log.debug('[training] T:{} rank:{} episdoe_num:{} episode_length:{} loss:{}'.format(
@@ -125,4 +126,4 @@ def train(rank, args, shared_model, T, lock, optimizer):
         optimizer.step()
 
     if rank == 0:
-        visual_performance(args.lr)
+        visual_performance(args.lr, args.num_processes)
