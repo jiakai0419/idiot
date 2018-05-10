@@ -93,7 +93,7 @@ def train(rank, args, shared_model, T, lock, optimizer):
         optimizer.zero_grad()
         loss = policy_loss + args.value_loss_coef * value_loss
         with torch.no_grad():
-            if (t + 1) % 100 == 0:
+            if (episode + 1) % 100 == 0:
                 print('[train debug] T:{} rank:{} episdoe_num:{} episode_length:{} loss:{}'.format(
                     T.value, rank, episode + 1, t + 1, loss.item()))
             performance_line.append((episode + 1, t + 1))
