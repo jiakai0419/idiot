@@ -1,3 +1,4 @@
+import logging
 import gym.spaces
 import argparse
 import torch
@@ -11,6 +12,25 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 MAGIC_NUMBER = 1103515245
+
+
+def register_logger(alpha):
+    root_logger = logging.getLogger("root")
+    root_logger.setLevel(logging.DEBUG)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+
+    info_handler = logging.FileHandler("info.{}".format(alpha), 'w')
+    info_handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    info_handler.setFormatter(formatter)
+
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(info_handler)
+    return root_logger
 
 
 class ActorNet(torch.nn.Module):
@@ -45,13 +65,15 @@ if __name__ == '__main__':
     parser.add_argument('--t-max', type=int, default=20000)
     args = parser.parse_args()
 
+    log = register_logger(args.lr)
+
     torch.manual_seed(MAGIC_NUMBER)
 
     env = gym.make(args.env_name)
     env = env.unwrapped
     env.seed(MAGIC_NUMBER)
-    print('[debug] observation_space.shape:{}'.format(env.observation_space.shape))
-    print('[debug] action_space.n:{}'.format(env.action_space.n))
+    log.debug('observation_space.shape:{}'.format(env.observation_space.shape))
+    log.debug('action_space.n:{}'.format(env.action_space.n))
 
     actor_net = ActorNet(env.observation_space.shape[0], env.action_space.n)
     critic_net = CriticNet(env.observation_space.shape[0])
@@ -105,7 +127,7 @@ if __name__ == '__main__':
 
             s = ss
 
-        print('episode:{}, rewards:{}'.format(episode + 1, rewards))
+        log.info('episode:{}, rewards:{}'.format(episode + 1, rewards))
 
         if (episode + 1) % 10 == 0:
             performance_line.append((episode + 1, rewards))
