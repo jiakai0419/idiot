@@ -1,7 +1,7 @@
 from __future__ import print_function
 import numpy as np
 
-N = 20
+N = 5
 
 
 def universal():

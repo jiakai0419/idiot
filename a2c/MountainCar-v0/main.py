@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from collections import deque
 
 import matplotlib
 
@@ -82,6 +83,7 @@ if __name__ == '__main__':
     critic_optimizer = optim.Adam(critic_net.parameters(), lr=args.lr)
 
     performance_line = []
+    recent_t = deque(maxlen=10)
 
     for episode in range(args.episode_num):
         s = env.reset()
@@ -126,6 +128,11 @@ if __name__ == '__main__':
                 break
 
             s = ss
+
+        recent_t.append(t)
+        if recent_t.count(args.t_max) == recent_t.maxlen:
+            log.info("Early Stopping")
+            exit(1)
 
         log.info('episode:{}, rewards:{}'.format(episode + 1, rewards))
 
