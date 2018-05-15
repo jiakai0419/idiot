@@ -61,9 +61,9 @@ if __name__ == '__main__':
     parser.add_argument('--env-name', default='MountainCar-v0')
     parser.add_argument('--episode-num', type=int, default=6000)
     parser.add_argument('--lr', type=float, default=0.001)
-    parser.add_argument('--gamma', type=float, default=0.999)
+    parser.add_argument('--gamma', type=float, default=0.996)
     parser.add_argument('--entropy-coef', type=float, default=0.01)
-    parser.add_argument('--t-max', type=int, default=20000)
+    parser.add_argument('--t-max', type=int, default=100000)
     args = parser.parse_args()
 
     log = register_logger(args.lr)
