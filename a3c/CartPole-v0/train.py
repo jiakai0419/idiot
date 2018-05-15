@@ -120,7 +120,8 @@ def train(rank, args, shared_model, T, lock, optimizer):
             if (episode + 1) % 100 == 0:
                 log.debug('[training] T:{} rank:{} episdoe_num:{} episode_length:{} loss:{}'.format(
                     T.value, rank, episode + 1, t + 1, loss.item()))
-            performance_line.append((episode + 1, t + 1))
+            if (episode + 1) % 10 == 0:
+                performance_line.append((episode + 1, t + 1))
         loss.backward()
         ensure_shared_grads(model, shared_model)
         optimizer.step()
