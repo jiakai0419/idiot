@@ -59,9 +59,9 @@ class CriticNet(torch.nn.Module):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--env-name', default='MountainCar-v0')
-    parser.add_argument('--episode-num', type=int, default=8000)
+    parser.add_argument('--episode-num', type=int, default=6000)
     parser.add_argument('--lr', type=float, default=0.001)
-    parser.add_argument('--gamma', type=float, default=0.99)
+    parser.add_argument('--gamma', type=float, default=0.999)
     parser.add_argument('--entropy-coef', type=float, default=0.01)
     parser.add_argument('--t-max', type=int, default=20000)
     args = parser.parse_args()
@@ -90,6 +90,7 @@ if __name__ == '__main__':
         s = torch.from_numpy(s).float()
         rewards = 0
         t = 0
+        metrics_value_loss = 0
         while True:
             t += 1
             logit = actor_net.forward(s.unsqueeze(0))
@@ -115,6 +116,8 @@ if __name__ == '__main__':
                 td_error = r + args.gamma * critic_net.forward(ss.unsqueeze(0)) - critic_net.forward(s.unsqueeze(0))
             value_loss = torch.pow(td_error, 2)
             policy_loss = -(log_prob * td_error.detach() + args.entropy_coef * entropy)
+            with torch.no_grad():
+                metrics_value_loss += value_loss.item()
 
             actor_optimizer.zero_grad()
             policy_loss.backward()
@@ -134,7 +137,8 @@ if __name__ == '__main__':
             log.info("Early Stopping")
             exit(1)
 
-        log.info('episode:{}, rewards:{}'.format(episode + 1, rewards))
+        log.info('episode:{}, rewards:{}, avg_value_loss:{:.2f}'.format(
+            episode + 1, rewards, metrics_value_loss/t))
 
         if (episode + 1) % 10 == 0:
             performance_line.append((episode + 1, rewards))
